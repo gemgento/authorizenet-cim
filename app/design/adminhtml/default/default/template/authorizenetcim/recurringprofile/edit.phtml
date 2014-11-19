@@ -1,0 +1,211 @@
+<div class="content-header">
+	<h3 class="icon-head"><?php echo $this->__('Modify Recurring Profile: # %s', $this->getProfile()->getReferenceId() ) ?></h3>
+	<p class="form-buttons">
+		<button onclick="setLocation('<?php echo Mage::helper('adminhtml')->getUrl('*/sales_recurring_profile/view', array('profile' => $this->getProfile()->getId())); ?>')" class="scalable back" type="button" title="Back" id="id_33c616a0ac947f3055d51c96d70ece8e"><span><span><span>Back</span></span></span></button>
+		<button onclick="setLocation(window.location.href)" class="scalable " type="button" title="Reset" id="id_af406489e2da433596039bb435e6a4ce"><span><span><span>Reset</span></span></span></button>
+		<button onclick="editForm.submit();" class="scalable save" type="button" title="Save" id="id_e9bc5c33e1606afcf299d5cfa85f1cea"><span><span><span>Save</span></span></span></button>
+	</p>
+</div>
+<div class="entry-edit">
+	<div class="entry-edit-head">
+		<h4 class="icon-head"><?php echo $this->__('Recurring Profile Settings' ) ?></h4>
+	</div>
+	<form action="<?php echo Mage::helper('adminhtml')->getUrl('*/authnetcim_profile/editPost', array( 'profile' => $this->getRequest()->getParam('profile') )) ?>" method="post" id="edit_form" enctype="multipart/form-data">
+		<input type="hidden" value="<?php echo Mage::getSingleton('core/session')->getFormKey(); ?>" name="form_key" />
+		<div class="fieldset">
+			<table class="form-list" cellspacing="0">
+				<?php echo $this->getChildHtml('authnetcim_profile_edit_above'); ?>
+				<tr>
+					<td class="label"><label for="nextbill-input"><?php echo $this->__('Next Billing Date') ?></label></td>
+					<td class="value">
+						<input type="text" name="next_billed" value="<?php echo $this->getNextBilled(); ?>" id="nextbill-input" class="input-text" />
+					</td>
+				</tr>
+				<?php if( $this->getProfile()->getShippingAddressInfo() != array() ): ?>
+					<tr>
+						<td class="label"><label for="shipping-address-select"><?php echo $this->__('Shipping Address') ?></label></td>
+						<td class="value"><?php echo str_replace( 'onchange', 'q', $this->getAddressesHtmlSelect('shipping') ) ?></td>
+					</tr>
+					<tr>
+						<td colspan="2">
+							<div id="shipping-new-address-form"<?php if ($this->customerHasAddresses()): ?> style="display:none;"<?php endif ?>
+								<input type="hidden" name="shipping[address_id]" value="<?php echo $this->getAddress()->getId() ?>" id="shipping:address_id" />
+								<table class="form-list" cellspacing="0">
+									<tr>
+										<td class="label"><label for="shipping:firstname">First Name<em class="required">*</em></label></td>
+										<td class="value">
+											<input type="text" class="input-text require-toggle" maxlength="255" title="First Name" value="<?php echo $this->escapeHtml($this->getAddress()->getFirstname()) ?>" name="shipping[firstname]" id="shipping:firstname">
+										</td>
+									</tr>
+									<tr>
+										<td class="label"><label for="shipping:lastname">Last Name<em class="required">*</em></label></td>
+										<td class="value">
+											<input type="text" class="input-text require-toggle" maxlength="255" title="Last Name" value="<?php echo $this->escapeHtml($this->getAddress()->getLastname()) ?>" name="shipping[lastname]" id="shipping:lastname">
+										</td>
+									</tr>
+									<tr>
+										<td class="label"><label for="shipping:company"><?php echo $this->__('Company') ?></label></td>
+										<td class="value">
+											<input type="text" id="shipping:company" name="shipping[company]" value="<?php echo $this->escapeHtml($this->getAddress()->getCompany()) ?>" title="<?php echo $this->__('Company') ?>" class="input-text <?php echo $this->helper('customer/address')->getAttributeValidationClass('company') ?>" />
+										</td>
+									</tr>
+									<?php $_streetValidationClass = 'require-toggle';//$this->helper('customer/address')->getAttributeValidationClass('street'); ?>
+									<tr>
+										<td class="label"><label for="shipping:street1"><?php echo $this->__('Address') ?><em class="required">*</em></label></td>
+										<td class="value">
+											<input type="text" title="<?php echo $this->__('Street Address') ?>" name="shipping[street][]" id="shipping:street1" value="<?php echo $this->escapeHtml($this->getAddress()->getStreet(1)) ?>" class="input-text <?php echo $_streetValidationClass ?>" />
+										</td>
+									</tr>
+									<?php $_streetValidationClass = trim(str_replace('require-toggle', '', $_streetValidationClass)); ?>
+									<?php for ($_i = 2, $_n = $this->helper('customer/address')->getStreetLines(); $_i <= $_n; $_i++): ?>
+									<tr class="add-field">
+										<td class="label"></td>
+										<td class="value">
+											<input type="text" title="<?php echo $this->__('Street Address %s', $_i) ?>" name="shipping[street][]" id="shipping:street<?php echo $_i ?>" value="<?php echo $this->escapeHtml($this->getAddress()->getStreet($_i)) ?>" class="input-text <?php echo $_streetValidationClass ?>" />
+										</div>
+									</tr>
+									<?php endfor; ?>
+									<?php if ($this->helper('customer/address')->isVatAttributeVisible()) : ?>
+									<tr>
+										<td class="label"><label for="shipping:vat_id"><?php echo $this->__('VAT Number'); ?></label></td>
+										<td class="value">
+											<input type="text" id="shipping:vat_id" name="shipping[vat_id]" value="<?php echo $this->escapeHtml($this->getAddress()->getVatId()); ?>" title="<?php echo $this->__('VAT Number'); ?>" class="input-text <?php echo $this->helper('customer/address')->getAttributeValidationClass('vat_id') ?>" />
+										</td>
+									</tr>
+									<?php endif; ?>
+									<tr>
+										<td class="label"><label for="shipping:city"><?php echo $this->__('City') ?><em class="required">*</em></label></td>
+										<td class="value">
+											<input type="text" title="<?php echo $this->__('City') ?>" name="shipping[city]" value="<?php echo $this->escapeHtml($this->getAddress()->getCity()) ?>" class="input-text require-toggle" id="shipping:city" />
+										</td>
+									</tr>
+									<tr>
+										<td class="label"><label for="shipping:region"><?php echo $this->__('State/Province') ?><em class="required">*</em></label></td>
+										<td class="value">
+											<select id="shipping:region_id" name="shipping[region_id]" title="<?php echo $this->__('State/Province') ?>" class="" style="display:none;">
+												<option value=""><?php echo $this->__('Please select region, state or province') ?></option>
+											</select>
+											<script type="text/javascript">
+												$('shipping:region_id').setAttribute('defaultValue',  "<?php echo $this->getAddress()->getRegionId() ?>");
+											</script>
+											<input type="text" id="shipping:region" name="shipping[region]" value="<?php echo $this->escapeHtml($this->getAddress()->getRegion()) ?>" title="<?php echo $this->__('State/Province') ?>" class="input-text" style="display:none;" />
+										</td>
+									</tr>
+									<tr>
+										<td class="label"><label for="shipping:postcode"><?php echo $this->__('Zip/Postal Code') ?><em class="required">*</em></label></td>
+										<td class="value">
+											<input type="text" title="<?php echo $this->__('Zip/Postal Code') ?>" name="shipping[postcode]" id="shipping:postcode" value="<?php echo $this->escapeHtml($this->getAddress()->getPostcode()) ?>" class="input-text validate-zip-international require-toggle" />
+										</td>
+									</tr>
+									<tr>
+										<td class="label"><label for="shipping:country_id"><?php echo $this->__('Country') ?><em class="required">*</em></label></td>
+										<td class="value">
+											<?php echo $this->getCountryHtmlSelect('shipping') ?>
+										</td>
+									</tr>
+									<tr>
+										<td class="label"><label for="shipping:telephone"><?php echo $this->__('Telephone') ?><em class="required">*</em></label></td>
+										<td class="value">
+											<input type="text" name="shipping[telephone]" value="<?php echo $this->escapeHtml($this->getAddress()->getTelephone()) ?>" title="<?php echo $this->__('Telephone') ?>" class="input-text require-toggle" id="shipping:telephone" />
+										</td>
+									</tr>
+									<tr>
+										<td class="label"><label for="shipping:fax"><?php echo $this->__('Fax') ?></label></td>
+										<td class="value">
+											<input type="text" name="shipping[fax]" value="<?php echo $this->escapeHtml($this->getAddress()->getFax()) ?>" title="<?php echo $this->__('Fax') ?>" class="input-tex" id="shipping:fax" />
+										</td>
+									</tr>
+									<?php $addressAttributes = $this->getChild('customer_form_shipping_address_user_defined_attributes');?>
+									<?php if ($addressAttributes): ?>
+										<?php $addressAttributes->setEntity($this->getAddress())->setEntityType('customer_address');?>
+										<?php $addressAttributes->setFieldIdFormat('shipping:%1$s')->setFieldNameFormat('shipping[%1$s]');?>
+										<?php echo $addressAttributes->setExcludeFileAttributes(true)->setShowContainer(false)->toHtml()?>
+									<?php endif;?>
+								</table>
+								<input type="hidden" name="shipping[save_in_address_book]" value="1" />
+							</div>
+						</td>
+					</tr>
+				<?php endif; ?>
+				<tr>
+					<td class="label"><label for="authnetcim_payment_id"><?php echo $this->__('Payment Information') ?></label></td>
+					<td class="value">
+						<select name="payment_id" id="authnetcim_payment_id">
+							<?php
+							$info	= $this->getAllCards();
+							$select	= '';
+							if( count($info) ): ?>
+								<?php foreach( $info as $inf ): ?>
+									<option value="<?php echo $inf->getPaymentId(); ?>" <?php if( $inf->getPaymentId() == $this->getProfile()->getInfoValue('additional_info', 'payment_id') ): ?>selected="selected"<?php endif; ?>>Credit Card: <?php echo substr_replace( $inf->getCardNumber(), '-', 4, 0 ); ?></option>
+								<?php endforeach; ?>
+							<?php endif; ?>
+						</select>
+						<p class="note"><a href="<?php echo Mage::helper('adminhtml')->getUrl( '*/customer/edit', array('_secure' => true, 'id' => $this->getCustomer()->getId()) ) ?>" target="_blank"><?php echo $this->__('Manage Customer\'s Credit Cards') ?></a></p>
+					</td>
+				</tr>
+				<?php echo $this->getChildHtml('authnetcim_profile_edit_below'); ?>
+				<tr>
+					<td class="label"></td>
+					<td class="value"><p>Any changes will take effect with the next scheduled payment.</p></td>
+				</tr>
+			</table>
+		</div>
+	</form>
+</div>
+<script type="text/javascript">
+//<![CDATA[
+	document.observe("dom:loaded", function() {
+		function dateCheckDisabled(date) {
+			/** Don't allow anything in the past. **/
+			if( date < new Date(<?php echo time()-86400; ?>000) ) {
+				return true;
+			}
+			
+			return '';
+		}
+		
+		Calendar.setup({
+			inputField: "nextbill-input",
+			ifFormat: "%e-%B %Y %H:%M",
+			dateStatusFunc: dateCheckDisabled,
+			showsTime: true,
+			singleClick : true,
+			weekNumbers: false,
+			cache: true,
+			range: [<?php echo date('Y'); ?>, <?php echo date('Y')+5; ?>],
+			date: new Date( <?php echo $this->getNextBilledRaw(); ?>000 )
+		});
+		
+		$('shipping-address-select').observe( 'change', function(e) {
+			if( $(this).value == '' ) {
+				$('shipping-new-address-form').show();
+				
+				// toggle required -> yes
+				$$('#edit_form .require-toggle').each(function(el) {
+					$(el).addClassName('required-entry');
+				});
+				
+				$('shipping:region_id').addClassName('validate-select').addClassName('required-entry');
+			}
+			else {
+				$('shipping-new-address-form').hide();
+				
+				// toggle required -> no
+				$$('#edit_form .require-toggle').each(function(el) {
+					$(el).removeClassName('required-entry');
+				});
+				
+				$('shipping:region_id').removeClassName('validate-select').removeClassName('required-entry');
+			}
+		});
+		
+		$('shipping:region_id').removeClassName('validate-select').removeClassName('required-entry');
+	});
+	
+	<?php if( $this->getProfile()->getShippingAddressInfo() != array() ): ?>
+		var shippingRegionUpdater = new RegionUpdater('shipping:country_id', 'shipping:region', 'shipping:region_id', <?php echo $this->helper('directory')->getRegionJson() ?>, undefined, 'shipping:postcode');
+	<?php endif; ?>
+	
+    editForm = new varienForm('edit_form', '');
+//]]>
+</script>

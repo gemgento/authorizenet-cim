@@ -1,0 +1,92 @@
+<?php if( !$this->isAjax() ): ?>
+<table id="cim-edit" class="form-edit" cellspacing="0">
+<?php endif; ?>
+	<tr>
+		<td class="address-list">
+			<div class="entry-edit-head">
+				<h4 class="icon-head head-customer-address-list"><?php echo $this->__('My Credit Cards') ?></h4>
+			</div>
+			<div class="fieldset" style="padding:0">
+				<ol>
+					<?php $cards = $this->getCards(); ?>
+					<?php if( $cards !== false && count($cards) ): ?>
+						<?php foreach( $cards as $card ): ?>
+						<li class="item info-box" id="card-<?php echo $card->customerPaymentProfileId; ?>" style="cursor:default">
+							<h3 class="box-title"><?php echo $this->__('Card:').' '.$this->formatCimCC( $card->payment->creditCard->cardNumber ) ?></h3>
+							<address class="box-content" style="overflow:auto">
+								<?php echo $card->billTo->firstName.' '.$card->billTo->lastName ?><br />
+								<?php echo $card->billTo->address ?><br />
+								<?php echo $card->billTo->city ?>, <?php echo $card->billTo->state ?>, <?php echo $card->billTo->zip ?><br />
+								<?php echo $card->billTo->country ?>
+								<div class="right">
+									<?php if( $card->inUse == 1 ): ?>
+										<abbr title="<?php echo $this->__('This card cannot be modified while associated with open orders.'); ?>"><?php echo $this->__('Card In Use'); ?></abbr>
+									<?php else: ?>
+										<button class="button" type="button" onclick="editCard(<?php echo $card->customerPaymentProfileId; ?>);"><span><span><?php echo $this->__('Edit'); ?></span></span></button> 
+										<button class="button" type="button" onclick="if(confirm('<?php echo $this->__('Are you sure you want to delete? This cannot be reversed.'); ?>')){deleteCard( <?php echo $card->customerPaymentProfileId; ?> );}"><span><span><?php echo $this->__('Delete'); ?></span></span></button>
+									<?php endif; ?>
+								</div>
+							</address>
+						</li>
+						<?php endforeach; ?>
+					<?php else: ?>
+					<li class="item"><?php echo $this->__('You have not yet saved any credit cards.') ?></li>
+					<?php endif; ?>
+				</ol>
+			</div>
+		</td>
+		<td id="card-form">
+			<?php echo $this->getChildHtml(); ?>
+		</td>
+	</tr>
+<?php if( !$this->isAjax() ): ?>
+</table>
+<?php endif; ?>
+
+<?php if( !$this->isAjax() ): ?>
+<script type="text/javascript">
+var cardDeleteUrl = "<?php echo $this->getUrl('*/authnetcim/delete', array('id' => $this->getCustomer()->getId())); ?>";
+var cardEditUrl = "<?php echo $this->getUrl('*/authnetcim/edit', array('id' => $this->getCustomer()->getId())); ?>";
+var cardSaveUrl = "<?php echo $this->getUrl('*/authnetcim/save', array('id' => $this->getCustomer()->getId())); ?>";
+
+function deleteCard( id ) {
+	$('card-'+id).hide();
+	
+	Element.show('loading-mask');
+	new Ajax.Request(cardDeleteUrl, {
+		method: 'post',
+		parameters: "c="+id,
+		evalScripts: true,
+		onComplete: function(data) {
+			Element.hide('loading-mask');
+		}
+	});
+}
+
+function editCard( id ) {
+	Element.show('loading-mask');
+	new Ajax.Updater('card-form', cardEditUrl, {
+		method: 'post',
+		parameters: "c="+id,
+		evalScripts: true,
+		onComplete: function(data) {
+			Element.hide('loading-mask');
+		}
+	});
+}
+
+function saveCard() {
+	Element.show('loading-mask');
+	new Ajax.Updater('cim-edit', cardSaveUrl, {
+		method: 'post',
+		parameters: Form.serialize('edit_form'),
+		evalScripts: true,
+		onComplete: function(data) {
+			Element.hide('loading-mask');
+			
+			editCard(0);
+		}
+	});
+}
+</script>
+<?php endif; ?>

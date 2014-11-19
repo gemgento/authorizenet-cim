@@ -1,0 +1,77 @@
+<?php $_code=$this->getMethodCode() ?>
+<ul class="form-list" id="payment_form_<?php echo $_code ?>" style="display:none;">
+<?php
+$style	= '';
+$require = 'required-entry ';
+$info	= $this->getPriorCards();
+if( $info ):
+	$style = ' style="display:none"';
+	$require = '';
+	?>
+	<li>
+		<label for="<?php echo $_code; ?>_payment_id"><?php echo $this->__('Pay with card on file'); ?></label>
+		<div class="input-box">
+			<select name="payment[payment_id]" id="<?php echo $_code; ?>_payment_id" class="<?php echo $_code; ?>_require required-entry">
+				<option value=""><?php echo $this->__('-- Select One --'); ?></option>
+				<?php foreach( $info as $inf ): ?>
+					<option value="<?php echo $inf->getPaymentId(); ?>"<?php echo ($inf->getPaymentId() == $this->getInfoData('payment_id') ? ' selected="selected"' : ''); ?>><?php echo substr_replace( $inf->getCardNumber(), '-', 4, 0 ); ?></option>
+				<?php endforeach; ?>
+			</select>
+			<br /><?php echo $this->__('Or,'); ?> <a href="#" onclick="$$('.<?php echo $_code; ?>_add').each(function(e){ e.toggle(); }); $$('.<?php echo $_code; ?>_require').each(function(e){ e.toggleClassName('required-entry') }); return false;"><?php echo $this->__('use a different card.'); ?></a>
+		</div>
+	</li>
+<?php endif; ?>
+	<li class="<?php echo $_code ?>_add"<?php echo $style; ?>>
+        <div class="input-box">
+            <label for="<?php echo $_code ?>_cc_type"><?php echo Mage::helper('payment')->__('Credit Card Type') ?> <span class="required">*</span></label><br/>
+            <select id="<?php echo $_code ?>_cc_type" name="payment[cc_type]" class="<?php echo $require.$_code; ?>_require">
+            <?php $_ccType = $this->getInfoData('cc_type') ?>
+                <option value=""></option>
+            <?php foreach ($this->getCcAvailableTypes() as $_typeCode => $_typeName): ?>
+                <option value="<?php echo $_typeCode ?>" <?php if($_typeCode==$_ccType): ?>selected="selected"<?php endif ?>><?php echo $_typeName ?></option>
+            <?php endforeach ?>
+            </select>
+        </div>
+    </li>
+	<li class="<?php echo $_code ?>_add"<?php echo $style; ?>>
+        <div class="input-box">
+            <label for="<?php echo $_code ?>_cc_number"><?php echo Mage::helper('payment')->__('Credit Card Number') ?> <span class="required">*</span></label><br/>
+            <input type="text" id="<?php echo $_code ?>_cc_number" name="payment[cc_number]" title="<?php echo Mage::helper('payment')->__('Credit Card Number') ?>" class="input-text <?php echo $require.$_code; ?>_require <?php if( $this->getInfoData('cc_number') == '' ): ?>validate-cc-number<?php endif; ?>" value="<?php echo $this->getInfoData('cc_number')?>" autocomplete="off" />
+        </div>
+    </li>
+	<li class="<?php echo $_code ?>_add"<?php echo $style; ?>>
+        <div class="input-box">
+            <label for="<?php echo $_code ?>_expiration"><?php echo Mage::helper('payment')->__('Expiration Date') ?> <span class="required">*</span></label><br/>
+            <select id="<?php echo $_code ?>_expiration" style="width:140px;" name="payment[cc_exp_month]" class="<?php echo $require.$_code; ?>_require">
+            <?php $_ccExpMonth = $this->getInfoData('cc_exp_month') ?>
+            <?php foreach ($this->getCcMonths() as $k=>$v): ?>
+                <option value="<?php echo $k ?>" <?php if($k==$_ccExpMonth): ?>selected="selected"<?php endif ?>><?php echo $v ?></option>
+            <?php endforeach ?>
+            </select>
+            <?php $_ccExpYear = $this->getInfoData('cc_exp_year') ?>
+            <select id="<?php echo $_code ?>_expiration_yr" style="width:103px;" name="payment[cc_exp_year]" class="<?php echo $require.$_code; ?>_require">
+            <?php foreach ($this->getCcYears() as $k=>$v): ?>
+                <option value="<?php echo $k ? $k : '' ?>" <?php if($k==$_ccExpYear): ?>selected="selected"<?php endif ?>><?php echo $v ?></option>
+            <?php endforeach ?>
+            </select>
+        </div>
+    </li>
+    <?php if($this->hasVerification()): ?>
+	<li class="<?php echo $_code ?>_add"<?php echo $style; ?>>
+        <div class="input-box">
+            <label for="<?php echo $_code ?>_cc_cid"><?php echo Mage::helper('payment')->__('Card Verification Number') ?> <span class="required">*</span></label><br/>
+            <input type="text" title="<?php echo Mage::helper('payment')->__('Card Verification Number') ?>" class="input-text cvv <?php echo $require.$_code; ?>_require <?php if( !empty( $require ) ): ?>validate-cc-cvn<?php endif; ?>" id="<?php echo $_code ?>_cc_cid" name="payment[cc_cid]" style="width:3em;" value="<?php echo $this->getInfoData('cc_cid')?>" autocomplete="off" />
+        </div>
+    </li>
+    <?php endif; ?>
+    <?php if( Mage::getStoreConfig( 'payment/'.$_code.'/allow_unsaved', Mage::getSingleton('adminhtml/session_quote')->getStoreId() ) ): ?>
+    <li class="<?php echo $_code ?>_add"<?php echo $style; ?>>
+        <div class="input-box">
+	    	<input type="checkbox" name="payment[save_card]" id="<?php echo $_code ?>_save_card" value="1" checked="checked" autocomplete="on" /> 
+	        <label for="<?php echo $_code ?>_save_card" style="float:none;font-weight:normal;"><?php echo $this->__('Save this credit card for next time'); ?></label>
+        </div>
+    </li>
+	<?php else: ?>
+    	<input type="hidden" name="payment[save_card]" id="<?php echo $_code ?>_save_card" value="1" />
+	<?php endif; ?>
+</ul>

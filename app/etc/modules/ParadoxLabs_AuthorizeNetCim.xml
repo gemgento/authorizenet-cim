@@ -1,0 +1,8 @@
+<config>
+    <modules>
+        <ParadoxLabs_AuthorizeNetCim>
+            <active>true</active>
+            <codePool>community</codePool>
+        </ParadoxLabs_AuthorizeNetCim>
+    </modules>
+</config>

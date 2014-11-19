@@ -1,0 +1,196 @@
+<div class="page-title title-buttons">
+	<h1><?php echo $this->__('Manage My Cards') ?></h1>
+</div>
+
+<div class="col2-set addresses-list">
+	<div class="col-1">
+		<h2><?php echo $this->__('My Credit Cards') ?></h2>
+		<ol>
+			<?php $cards = $this->getCards(); ?>
+			<?php if( $cards !== false && count($cards) ): ?>
+				<?php foreach( $cards as $card ): ?>
+				<li class="item info-box">
+					<h3 class="box-title"><?php echo $this->__('Card:').' '.$this->formatCimCC( $card->payment->creditCard->cardNumber ) ?></h3>
+					<address class="box-content">
+						<?php echo $card->billTo->firstName.' '.$card->billTo->lastName ?><br />
+						<?php echo $card->billTo->address ?><br />
+						<?php echo $card->billTo->city ?>, <?php echo $card->billTo->state ?>, <?php echo $card->billTo->zip ?><br />
+						<?php echo $card->billTo->country ?>
+						<div class="right">
+							<?php if( $card->inUse == 1 ): ?>
+								<abbr title="<?php echo $this->__('This card cannot be modified while associated with open orders.'); ?>"><?php echo $this->__('Card In Use'); ?></abbr>
+							<?php else: ?>
+								<form id="edit_<?php echo $card->customerPaymentProfileId ?>" action="<?php echo Mage::getUrl('*/*', array('_secure' => true)) ?>" method="post">
+									<input type="hidden" name="form_key" value="<?php echo Mage::getSingleton('core/session')->getFormKey() ?>" />
+									<input type="hidden" name="c" value="<?php echo $card->customerPaymentProfileId ?>" />
+									<button class="button" type="submit"><span><span><?php echo $this->__('Edit'); ?></span></span></button>
+								</form>
+								<form id="del_<?php echo $card->customerPaymentProfileId ?>" action="<?php echo Mage::getUrl('*/*/delete', array('_secure' => true)) ?>" method="post" onsubmit="return confirm('<?php echo $this->__('Are you sure you want to delete this card? This action cannot be reversed.'); ?>');">
+									<input type="hidden" name="form_key" value="<?php echo Mage::getSingleton('core/session')->getFormKey() ?>" />
+									<input type="hidden" name="c" value="<?php echo $card->customerPaymentProfileId ?>" />
+									<button class="button" type="submit"><span><span><?php echo $this->__('Delete'); ?></span></span></button>
+								</form>
+							<?php endif; ?>
+						</div>
+					</address>
+				</li>
+				<?php endforeach; ?>
+			<?php else: ?>
+			<li class="item"><?php echo $this->__('You have not yet saved any credit cards.') ?></li>
+			<?php endif; ?>
+		</ol>
+	</div>
+	<div class="col-2">
+		<?php if( $this->isEdit() ): ?>
+			<h2><?php echo $this->__('Editing Card %s', $this->formatCimCC( $this->getCard()->payment->creditCard->cardNumber ) ); ?></h2>
+		<?php else: ?>
+			<h2><?php echo $this->__('Add A Credit Card') ?></h2>
+		<?php endif; ?>
+		<form action="<?php echo Mage::getUrl('*/*/create/', array('_secure' => true)) ?>" method="post" style="display:block;width:270px;" id="form-validate">
+		<input type="hidden" name="form_key" value="<?php echo Mage::getSingleton('core/session')->getFormKey() ?>" />
+		<input type="hidden" name="c" value="<?php echo $this->getCard()->customerPaymentProfileId; ?>" />
+		<ul class="form-list sp-methods">
+			<?php $_code = 'authnetcim'; ?>
+			<li><h4><?php echo $this->__('Cardholder Information') ?></h4></li>
+			<li>
+				<label for="<?php echo $_code ?>_fn" class="required"><em>*</em><?php echo $this->__('First Name') ?></label>
+				<div class="input-box">
+					<input type="text" id="<?php echo $_code ?>_fn" name="payment[firstname]" class="input-text required-entry" value="<?php echo $this->getCard()->billTo->firstName; ?>" />
+				</div>
+			</li>
+			<li>
+				<label for="<?php echo $_code ?>_ln" class="required"><em>*</em><?php echo $this->__('Last Name') ?></label>
+				<div class="input-box">
+					<input type="text" id="<?php echo $_code ?>_ln" name="payment[lastname]" class="input-text required-entry" value="<?php echo $this->getCard()->billTo->lastName; ?>" />
+				</div>
+			</li>
+			<li>
+				<label for="<?php echo $_code ?>_addr" class="required"><em>*</em><?php echo $this->__('Street Address') ?></label>
+				<div class="input-box">
+					<input type="text" id="<?php echo $_code ?>_addr" name="payment[address1]" class="input-text required-entry" value="<?php echo $this->getCard()->billTo->address; ?>" />
+				</div>
+			</li>
+			<li>
+				<label for="<?php echo $_code ?>_city" class="required"><em>*</em><?php echo $this->__('City') ?></label>
+				<div class="input-box">
+					<input type="text" id="<?php echo $_code ?>_city" name="payment[city]" class="input-text required-entry" value="<?php echo $this->getCard()->billTo->city; ?>" />
+				</div>
+			</li>
+			<li>
+				<label for="<?php echo $_code ?>_st" class="required"><em>*</em><?php echo $this->__('State/Province') ?></label>
+				<div class="input-box">
+					<select style="" class="validate-select required-entry" title="State/Province" name="payment[state]" id="region_id" style="display: none;">
+						<option value=""><?php echo $this->__('Please select region, state or province') ?></option>
+					</select>
+					<script type="text/javascript">
+						$('region_id').setAttribute('defaultValue', '<?php echo Mage::getModel("directory/region")->loadByName( $this->getCard()->billTo->state, $this->getCard()->billTo->country )->getId(); ?>');
+					</script>
+					<input type="text" class="input-text required-entry" title="State/Province" value="<?php echo $this->getCard()->billTo->state; ?>" name="payment[region]" id="region" />
+				</div>
+			</li>
+			<li>
+				<label for="<?php echo $_code ?>_zip" class="required"><em>*</em><?php echo $this->__('Zip/Postal Code') ?></label>
+				<div class="input-box">
+					<input type="text" id="<?php echo $_code ?>_zip" name="payment[zip]" class="input-text required-entry" value="<?php echo $this->getCard()->billTo->zip; ?>" />
+				</div>
+			</li>
+			<li>
+				<label for="<?php echo $_code ?>_country" class="required"><em>*</em><?php echo $this->__('Country') ?></label>
+				<div class="input-box">
+					<?php echo $this->getAddressBlock()->getCountryHtmlSelect( $this->getCard()->billTo->country, 'payment[country]' ); ?>
+				</div>
+			</li>
+			
+			<li><h4><?php echo $this->__('Credit Card Information') ?></h4></li>
+			<?php if( $this->isEdit() ): ?>
+				<li>
+					<input type="radio" name="payment[sameCard]" value="1" id="sameCard_1" onchange="$$('.<?php echo $_code; ?>_add').each(function(e){ e.toggle(); }); $$('.<?php echo $_code; ?>_require').each(function(e){ e.toggleClassName('required-entry') });" checked="checked" /> <label for="sameCard_1"><?php echo $this->__( 'Continue using card %s', $this->formatCimCC( $this->getCard()->payment->creditCard->cardNumber ) ); ?></label><br />
+					<input type="radio" name="payment[sameCard]" value="0" id="sameCard_0" onchange="$$('.<?php echo $_code; ?>_add').each(function(e){ e.toggle(); }); $$('.<?php echo $_code; ?>_require').each(function(e){ e.toggleClassName('required-entry') });" /> <label for="sameCard_0"><?php echo $this->__('Change credit card details'); ?></label>
+				</li>
+			<?php endif; ?>
+			<?php $style = $this->isEdit() ? ' style="display:none"' : ''; ?>
+			<li class="<?php echo $_code ?>_add"<?php echo $style; ?>>
+				<label for="<?php echo $_code ?>_cc_type" class="required"><em>*</em><?php echo $this->__('Credit Card Type') ?></label>
+				<div class="input-box">
+					<select id="<?php echo $_code ?>_cc_type" name="payment[cc_type]" class="<?php echo $_code; ?>_require <?php if( !$this->isEdit() ): ?>required-entry<?php endif; ?>">
+						<option value=""><?php echo $this->__('--Please Select--')?></option>
+						<?php foreach ($this->getCcAvailableTypes() as $_typeCode => $_typeName): ?>
+							<option value="<?php echo $_typeCode ?>"><?php echo $_typeName ?></option>
+						<?php endforeach ?>
+					</select>
+				</div>
+			</li>
+			<li class="<?php echo $_code ?>_add"<?php echo $style; ?>>
+				<label for="<?php echo $_code ?>_cc_number" class="required"><em>*</em><?php echo $this->__('Credit Card Number') ?></label>
+				<div class="input-box">
+					<input type="text" id="<?php echo $_code ?>_cc_number" autocomplete="off" name="payment[cc_number]" title="<?php echo $this->__('Credit Card Number') ?>" class="input-text <?php echo $_code; ?>_require <?php if( !$this->isEdit() ): ?>required-entry validate-cc-number<?php endif; ?>" value="<?php echo $this->getCard()->payment->creditCard->cardNumber; ?>" />
+				</div>
+			</li>
+			<li id="<?php echo $_code ?>_cc_type_exp_div" class="<?php echo $_code ?>_add"<?php echo $style; ?>>
+				<label for="<?php echo $_code ?>_expiration" class="required"><em>*</em><?php echo $this->__('Expiration Date') ?></label>
+				<div class="input-box">
+					<div class="v-fix">
+						<select id="<?php echo $_code ?>_expiration" name="payment[cc_exp_month]" class="month <?php echo $_code; ?>_require <?php if( !$this->isEdit() ): ?>required-entry<?php endif; ?>">
+							<option value=""><?php echo $this->__('Month') ?></option>
+						<?php $_ccExpMonth = $this->getInfoData('cc_exp_month') ?>
+						<?php foreach ($this->getCcMonths() as $k=>$v): ?>
+							<option value="<?php echo $k?$k:'' ?>"<?php if($k==$_ccExpMonth): ?> selected="selected"<?php endif ?>><?php echo $v ?></option>
+						<?php endforeach ?>
+						</select>
+					</div>
+					<div class="v-fix">
+						<?php $_ccExpYear = $this->getInfoData('cc_exp_year') ?>
+						<select id="<?php echo $_code ?>_expiration_yr" name="payment[cc_exp_year]" class="year <?php echo $_code; ?>_require <?php if( !$this->isEdit() ): ?>required-entry<?php endif; ?>">
+							<option value=""><?php echo $this->__('Year') ?></option>
+						<?php foreach ($this->getCcYears() as $k=>$v): ?>
+							<option value="<?php echo $k?$k:'' ?>"<?php if($k==$_ccExpYear): ?> selected="selected"<?php endif ?>><?php echo $v ?></option>
+						<?php endforeach ?>
+						</select>
+					</div>
+				</div>
+			</li>
+			<?php if($this->hasVerification()): ?>
+			<li id="<?php echo $_code ?>_cc_type_cvv_div" class="<?php echo $_code ?>_add"<?php echo $style; ?>>
+				<label for="<?php echo $_code ?>_cc_cid" class="required"><em>*</em><?php echo $this->__('Card Verification Number') ?></label>
+				<div class="input-box">
+					<div class="v-fix">
+						<input type="text" title="<?php echo $this->__('Card Verification Number') ?>" autocomplete="off" class="input-text cvv <?php echo $_code; ?>_require <?php if( !$this->isEdit() ): ?>required-entry validate-cc-cvn<?php endif; ?>" id="<?php echo $_code ?>_cc_cid" name="payment[cc_cid]" value="" />
+					</div>
+				</div>
+			</li>
+			<?php endif; ?>
+			<li>
+				<button class="button" type="submit"><span><span><?php echo $this->__('Submit') ?></span></span></button>
+				<a href="<?php echo $this->getUrl('*/*', array('_secure' => true)); ?>"><?php echo $this->__('Cancel'); ?></a>
+			</li>
+		</ul>
+		</form>
+		<script type="text/javascript">
+		//<![CDATA[
+		    var dataForm = new VarienForm('form-validate', true);
+			new RegionUpdater('country', 'region', 'region_id', <?php echo Mage::helper('directory')->getRegionJson() ?>, undefined, '<?php echo $_code ?>_zip');
+		    //]]>
+		</script>
+	</div>
+</div>
+<style type="text/css">
+.form-list label {
+	float: none;
+}
+.addresses-list .col-2 li {
+	padding-bottom: 3px;
+}
+.form-list input.input-text {
+	width: 254px;
+}
+.form-list select {
+	width: 260px;
+}
+.sp-methods select.month {
+	margin-right: 10px;
+	width: 154px;
+}
+.sp-methods select.year {
+	width: 96px;
+}
+</style>

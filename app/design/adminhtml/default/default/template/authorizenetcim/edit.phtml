@@ -1,0 +1,140 @@
+<div class="entry-edit-head">
+	<h4 class="icon-head head-customer-address-list">
+		<?php if( $this->isEdit() ): ?>
+			<?php echo $this->__('Editing Card %s', $this->formatCimCC( $this->getCard()->payment->creditCard->cardNumber ) ); ?>
+		<?php else: ?>
+			<?php echo $this->__('Add A Credit Card') ?>
+		<?php endif; ?>
+	</h4>
+</div>
+<div class="fieldset">
+	<input type="hidden" name="c" value="<?php echo $this->getCard()->customerPaymentProfileId; ?>" />
+	<?php $_code = 'authnetcim'; ?>
+	<h4><?php echo $this->__('Cardholder Information') ?></h4>
+	<table class="form-list" cellspacing="0">
+		<tr>
+			<td class="label"><label for="<?php echo $_code ?>_fn"><?php echo $this->__('First Name') ?> <span class="required">*</span></label></td>
+			<td class="value">
+				<input type="text" id="<?php echo $_code ?>_fn" name="payment[firstname]" class="input-text" value="<?php echo $this->getCard()->billTo->firstName; ?>" />
+			</td>
+		</tr>
+		<tr>
+			<td class="label"><label for="<?php echo $_code ?>_ln"><?php echo $this->__('Last Name') ?> <span class="required">*</span></label></td>
+			<td class="value">
+				<input type="text" id="<?php echo $_code ?>_ln" name="payment[lastname]" class="input-text" value="<?php echo $this->getCard()->billTo->lastName; ?>" />
+			</td>
+		</tr>
+		<tr>
+			<td class="label"><label for="<?php echo $_code ?>_addr"><?php echo $this->__('Street Address') ?> <span class="required">*</span></label></td>
+			<td class="value">
+				<input type="text" id="<?php echo $_code ?>_addr" name="payment[address1]" class="input-text" value="<?php echo $this->getCard()->billTo->address; ?>" />
+			</td>
+		</tr>
+		<tr>
+			<td class="label"><label for="<?php echo $_code ?>_city"><?php echo $this->__('City') ?> <span class="required">*</span></label></td>
+			<td class="value">
+				<input type="text" id="<?php echo $_code ?>_city" name="payment[city]" class="input-text" value="<?php echo $this->getCard()->billTo->city; ?>" />
+			</td>
+		</tr>
+		<tr>
+			<td class="label"><label for="<?php echo $_code ?>_region_id"><?php echo $this->__('State/Province') ?> <span class="required">*</span></label></td>
+			<td class="value">
+				<select class="validate-select" title="State/Province" name="payment[state]" id="<?php echo $_code ?>_region_id">
+					<option value=""><?php echo $this->__('Please select region, state or province') ?></option>
+				</select>
+				<script type="text/javascript">
+					$('<?php echo $_code ?>_region_id').setAttribute('defaultValue', '<?php echo Mage::getModel("directory/region")->loadByName( $this->getCard()->billTo->state, $this->getCard()->billTo->country )->getId(); ?>');
+				</script>
+				<input type="text" class="input-text" title="State/Province" value="<?php echo $this->getCard()->billTo->state; ?>" name="payment[region]" id="<?php echo $_code ?>_region" />
+			</td>
+		</tr>
+		<tr>
+			<td class="label"><label for="<?php echo $_code ?>_zip"><?php echo $this->__('Zip/Postal Code') ?> <span class="required">*</span></label></td>
+			<td class="value">
+				<input type="text" id="<?php echo $_code ?>_zip" name="payment[zip]" class="input-text" value="<?php echo $this->getCard()->billTo->zip; ?>" />
+			</td>
+		</tr>
+		<tr>
+			<td class="label"><label for="<?php echo $_code ?>_country"><?php echo $this->__('Country') ?> <span class="required">*</span></label></td>
+			<td class="value">
+				<?php echo $this->getAddressBlock()->getCountryHtmlSelect( $this->getCard()->billTo->country, 'payment[country]', $_code.'_country' ); ?>
+			</td>
+		</tr>
+	</table>
+		
+	<h4><?php echo $this->__('Credit Card Information') ?></h4>
+	<?php if( $this->isEdit() ): ?>
+		<div>
+			<input type="radio" name="payment[sameCard]" value="1" id="sameCard_1" onchange="if(this.checked==true){ $('ccInfo').hide(); } else { $('ccInfo').show(); }" checked="checked" /> <label for="sameCard_1"><?php echo $this->__( 'Continue using card %s', $this->formatCimCC( $this->getCard()->payment->creditCard->cardNumber ) ); ?></label><br />
+			<input type="radio" name="payment[sameCard]" value="0" id="sameCard_0" onchange="if(this.checked==true){ $('ccInfo').show(); } else { $('ccInfo').hide(); }" /> <label for="sameCard_0"><?php echo $this->__('Change credit card details'); ?></label>
+		</div>
+	<?php endif; ?>
+	<table class="form-list" cellspacing="0" <?php if( $this->isEdit() ): ?>style="display:none"<?php endif; ?> id="ccInfo">
+		<tr>
+			<td class="label"><label for="<?php echo $_code ?>_cc_type"><?php echo $this->__('Credit Card Type') ?> <span class="required">*</span></label></td>
+			<td class="value">
+				<select id="<?php echo $_code ?>_cc_type" name="payment[cc_type]">
+					<option value=""><?php echo $this->__('--Please Select--')?></option>
+					<?php foreach ($this->getCcAvailableTypes() as $_typeCode => $_typeName): ?>
+						<option value="<?php echo $_typeCode ?>"><?php echo $_typeName ?></option>
+					<?php endforeach ?>
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td class="label"><label for="<?php echo $_code ?>_cc_number"><?php echo $this->__('Credit Card Number') ?> <span class="required">*</span></label></td>
+			<td class="value">
+				<input type="text" id="<?php echo $_code ?>_cc_number" name="payment[cc_number]" title="<?php echo $this->__('Credit Card Number') ?>" class="input-text <?php if( $this->getCard()->payment->creditCard->cardNumber == ''): ?>validate-cc-number<?php endif; ?>" value="<?php echo $this->getCard()->payment->creditCard->cardNumber; ?>" autocomplete="off" />
+			</td>
+		</tr>
+		<tr>
+			<td class="label"><label for="<?php echo $_code ?>_expiration"><?php echo $this->__('Expiration Date') ?> <span class="required">*</span></label></td>
+			<td class="value">
+				<select id="<?php echo $_code ?>_expiration" name="payment[cc_exp_month]" class="month" style="width:150px">
+					<option value=""><?php echo $this->__('Month') ?></option>
+				<?php $_ccExpMonth = $this->getInfoData('cc_exp_month') ?>
+				<?php foreach ($this->getCcMonths() as $k=>$v): ?>
+					<option value="<?php echo $k?$k:'' ?>"<?php if($k==$_ccExpMonth): ?> selected="selected"<?php endif ?>><?php echo $v ?></option>
+				<?php endforeach ?>
+				</select> 
+				
+				<?php $_ccExpYear = $this->getInfoData('cc_exp_year') ?>
+				<select id="<?php echo $_code ?>_expiration_yr" name="payment[cc_exp_year]" class="year" style="width:80px">
+					<option value=""><?php echo $this->__('Year') ?></option>
+				<?php foreach ($this->getCcYears() as $k=>$v): ?>
+					<option value="<?php echo $k?$k:'' ?>"<?php if($k==$_ccExpYear): ?> selected="selected"<?php endif ?>><?php echo $v ?></option>
+				<?php endforeach ?>
+				</select>
+			</td>
+		</tr>
+		<?php if($this->hasVerification()): ?>
+		<tr>
+			<td class="label"><label for="<?php echo $_code ?>_cc_cid"><?php echo $this->__('Card Verification Number') ?> <span class="required">*</span></label></td>
+			<td class="value">
+				<input type="text" title="<?php echo $this->__('Card Verification Number') ?>" class="input-text cvv" id="<?php echo $_code ?>_cc_cid" name="payment[cc_cid]" value="" style="width:50px" autocomplete="off" />
+			</td>
+		</tr>
+		<?php endif; ?>
+	</table>
+	
+	<table class="form-list" cellspacing="0">
+		<tr>
+			<td class="label"></td>
+			<td class="value">
+				<button class="button" type="button" onclick="saveCard()"><span><span><?php echo $this->__('Save') ?></span></span></button>
+				<a href="#" onclick="editCard(0); return false;"><?php echo $this->__('Cancel'); ?></a>
+			</td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript">
+//<![CDATA[
+	new RegionUpdater('<?php echo $_code ?>_country', '<?php echo $_code ?>_region', '<?php echo $_code ?>_region_id', <?php echo Mage::helper('directory')->getRegionJson() ?>, undefined, '<?php echo $_code ?>_zip');
+	
+	/* Prevent the region from holding up submit... unfortunately no better way to do this. */
+	document.observe("dom:loaded", function() {
+		$('authnetcim_region_id').removeClassName('required-entry').removeClassName('validate-select');$('authnetcim_region').removeClassName('required-entry');
+		setInterval( "$('authnetcim_region_id').removeClassName('required-entry').removeClassName('validate-select');$('authnetcim_region').removeClassName('required-entry');", 10000 );
+	});
+//]]>
+</script>

@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<layout version="1.0.0">
+	<adminhtml_sales_recurring_profile_view>
+		<reference name="sales.recurring.profile.tab.info">
+			<block type="core/text_list" name="billing_info">
+				<action method="addToParentGroup"><value>info_blocks_row_5</value></action>
+				<action method="setViewColumn"><value>1</value></action>
+				<action method="setViewLabel" translate="value"><value>Billing Information</value></action>
+			</block>
+		</reference>
+	</adminhtml_sales_recurring_profile_view>
+</layout>

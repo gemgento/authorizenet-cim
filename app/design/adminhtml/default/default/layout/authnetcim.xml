@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<layout version="1.0.0">
+    <adminhtml_customer_edit>
+        <reference name="customer_edit_tabs">
+            <block type="authnetcim/adminhtml_customer_tab" name="customer_edit_tab_authnetcim" template="authorizenetcim/tab.phtml">
+            	<block type="authnetcim/adminhtml_customer_view" name="authnetcim.card.manager" template="authorizenetcim/manage.phtml" before="-">
+            		<block type="authnetcim/adminhtml_customer_edit" name="authnetcim.card.edit.form" template="authorizenetcim/edit.phtml" />
+            	</block>
+            </block>
+            <action method="addTab"><name>customer_edit_tab_authnetcim</name><block>customer_edit_tab_authnetcim</block></action>
+        </reference>
+    </adminhtml_customer_edit>
+
+	<adminhtml_sales_recurring_profile_view>
+		<reference name="billing_info">
+			<block type="authnetcim/recurringprofile_info" name="authnetcim_profile" template="authorizenetcim/recurringprofile/info.phtml" />
+		</reference>
+	</adminhtml_sales_recurring_profile_view>
+	
+	<adminhtml_authnetcim_profile_edit>
+		<reference name="content">
+			<block type="authnetcim/recurringprofile_edit" name="authnetcim_profile_edit" template="authorizenetcim/recurringprofile/edit.phtml">
+				<block type="core/text_list" name="authnetcim_profile_edit_above" as="aboveForm" output="toHtml" />
+				<block type="core/text_list" name="authnetcim_profile_edit_below" as="belowForm" output="toHtml" />
+			</block>
+		</reference>
+	</adminhtml_authnetcim_profile_edit>
+</layout>

@@ -1,0 +1,153 @@
+<div class="page-title">
+	<h1><?php echo $this->__('Modify Recurring Profile: # %s', $this->getProfile()->getReferenceId() ) ?></h1>
+</div>
+<?php echo $this->getMessagesBlock()->getGroupedHtml() ?>
+<form action="<?php echo $this->getUrl('authnetcim/profile/editPost', array( 'profile' => $this->getRequest()->getParam('profile') )) ?>" method="post" id="form-validate" enctype="multipart/form-data">
+<input type="hidden" name="form_key" value="<?php echo Mage::getSingleton('core/session')->getFormKey() ?>" />
+<fieldset>
+	<ul class="form-list">
+		<?php echo $this->getChildHtml('authnetcim_profile_edit_above'); ?>
+		<?php if( $this->getProfile()->getShippingAddressInfo() != array() ): ?>
+			<li>
+				<label for="shipping-address-select"><?php echo $this->__('Shipping Address') ?></label>
+				<div class="input-box"><?php echo str_replace( 'onchange', 'q', $this->getAddressesHtmlSelect('shipping') ) ?></div>
+			</li>
+			<li id="shipping-new-address-form"<?php if ($this->customerHasAddresses()): ?> style="display:none;"<?php endif ?>>
+				<div class="fieldset">
+					<input type="hidden" name="shipping[address_id]" value="<?php echo $this->getAddress()->getId() ?>" id="shipping:address_id" />
+					<ul>
+						<li class="fields"><?php echo $this->getLayout()->createBlock('customer/widget_name')->setObject($this->getAddress())
+								->setFieldIdFormat('shipping:%s')->setFieldNameFormat('shipping[%s]')->toHtml() ?>
+						</li>
+						<li>
+							<label for="shipping:company"><?php echo $this->__('Company') ?></label>
+							<div class="input-box">
+								<input type="text" id="shipping:company" name="shipping[company]" value="<?php echo $this->escapeHtml($this->getAddress()->getCompany()) ?>" title="<?php echo $this->__('Company') ?>" class="input-text <?php echo $this->helper('customer/address')->getAttributeValidationClass('company') ?>" />
+							</div>
+						</li>
+						<?php $_streetValidationClass = $this->helper('customer/address')->getAttributeValidationClass('street'); ?>
+						<li>
+							<label for="shipping:street1" class="required"><em>*</em><?php echo $this->__('Address') ?></label>
+							<div class="input-box">
+								<input type="text" title="<?php echo $this->__('Street Address') ?>" name="shipping[street][]" id="shipping:street1" value="<?php echo $this->escapeHtml($this->getAddress()->getStreet(1)) ?>" class="input-text <?php echo $_streetValidationClass ?>" />
+							</div>
+						</li>
+						<?php $_streetValidationClass = trim(str_replace('required-entry', '', $_streetValidationClass)); ?>
+						<?php for ($_i = 2, $_n = $this->helper('customer/address')->getStreetLines(); $_i <= $_n; $_i++): ?>
+						<li class="add-field">
+							<div class="input-box">
+								<input type="text" title="<?php echo $this->__('Street Address %s', $_i) ?>" name="shipping[street][]" id="shipping:street<?php echo $_i ?>" value="<?php echo $this->escapeHtml($this->getAddress()->getStreet($_i)) ?>" class="input-text <?php echo $_streetValidationClass ?>" />
+							</div>
+						</li>
+						<?php endfor; ?>
+						<li class="fields">
+							<?php if ($this->helper('customer/address')->isVatAttributeVisible()) : ?>
+							<div class="field">
+								<label for="shipping:vat_id"><?php echo $this->__('VAT Number'); ?></label>
+								<div class="input-box">
+									<input type="text" id="shipping:vat_id" name="shipping[vat_id]" value="<?php echo $this->escapeHtml($this->getAddress()->getVatId()); ?>" title="<?php echo $this->__('VAT Number'); ?>" class="input-text <?php echo $this->helper('customer/address')->getAttributeValidationClass('vat_id') ?>" />
+								</div>
+							</div>
+							<?php endif; ?>
+							<div class="field">
+								<label for="shipping:city" class="required"><em>*</em><?php echo $this->__('City') ?></label>
+								<div class="input-box">
+									<input type="text" title="<?php echo $this->__('City') ?>" name="shipping[city]" value="<?php echo $this->escapeHtml($this->getAddress()->getCity()) ?>" class="input-text <?php echo $this->helper('customer/address')->getAttributeValidationClass('city') ?>" id="shipping:city" />
+								</div>
+							</div>
+							<div class="field">
+								<label for="shipping:region" class="required"><em>*</em><?php echo $this->__('State/Province') ?></label>
+								<div class="input-box">
+									<select id="shipping:region_id" name="shipping[region_id]" title="<?php echo $this->__('State/Province') ?>" class="validate-select" style="display:none;">
+									<option value=""><?php echo $this->__('Please select region, state or province') ?></option>
+								</select>
+								<script type="text/javascript">
+									$('shipping:region_id').setAttribute('defaultValue',  "<?php echo $this->getAddress()->getRegionId() ?>");
+								</script>
+								<input type="text" id="shipping:region" name="shipping[region]" value="<?php echo $this->escapeHtml($this->getAddress()->getRegion()) ?>" title="<?php echo $this->__('State/Province') ?>" class="input-text <?php echo $this->helper('customer/address')->getAttributeValidationClass('region') ?>" style="display:none;" />
+							</div>
+							</div>
+						</li>
+						<li class="fields">
+							<div class="field">
+								<label for="shipping:postcode" class="required"><em>*</em><?php echo $this->__('Zip/Postal Code') ?></label>
+								<div class="input-box">
+									<input type="text" title="<?php echo $this->__('Zip/Postal Code') ?>" name="shipping[postcode]" id="shipping:postcode" value="<?php echo $this->escapeHtml($this->getAddress()->getPostcode()) ?>" class="input-text validate-zip-international <?php echo $this->helper('customer/address')->getAttributeValidationClass('postcode') ?>" />
+								</div>
+							</div>
+							<div class="field">
+								<label for="shipping:country_id" class="required"><em>*</em><?php echo $this->__('Country') ?></label>
+								<div class="input-box">
+									<?php echo $this->getCountryHtmlSelect('shipping') ?>
+								</div>
+							</div>
+						</li>
+						<li class="fields">
+							<div class="field">
+								<label for="shipping:telephone" class="required"><em>*</em><?php echo $this->__('Telephone') ?></label>
+								<div class="input-box">
+									<input type="text" name="shipping[telephone]" value="<?php echo $this->escapeHtml($this->getAddress()->getTelephone()) ?>" title="<?php echo $this->__('Telephone') ?>" class="input-text <?php echo $this->helper('customer/address')->getAttributeValidationClass('telephone') ?>" id="shipping:telephone" />
+								</div>
+							</div>
+							<div class="field">
+								<label for="shipping:fax"><?php echo $this->__('Fax') ?></label>
+								<div class="input-box">
+									<input type="text" name="shipping[fax]" value="<?php echo $this->escapeHtml($this->getAddress()->getFax()) ?>" title="<?php echo $this->__('Fax') ?>" class="input-text <?php echo $this->helper('customer/address')->getAttributeValidationClass('fax') ?>" id="shipping:fax" />
+								</div>
+							</div>
+						</li>
+						<?php $addressAttributes = $this->getChild('customer_form_shipping_address_user_defined_attributes');?>
+						<?php if ($addressAttributes): ?>
+							<?php $addressAttributes->setEntity($this->getAddress())->setEntityType('customer_address');?>
+							<?php $addressAttributes->setFieldIdFormat('shipping:%1$s')->setFieldNameFormat('shipping[%1$s]');?>
+							<?php echo $addressAttributes->setExcludeFileAttributes(true)->setShowContainer(false)->toHtml()?>
+						<?php endif;?>
+						<li class="no-display"><input type="hidden" name="shipping[save_in_address_book]" value="1" /></li>
+					</ul>
+				</div>
+			</li>
+		<?php endif; ?>
+		<li>
+			<label for="authnetcim_payment_id"><?php echo $this->__('Payment Information') ?></label>
+			<div class="input-box">
+				<select name="payment_id" id="authnetcim_payment_id">
+					<?php
+					$info	= $this->getAllCards();
+					$select	= '';
+					if( count($info) ): ?>
+						<?php foreach( $info as $inf ): ?>
+							<option value="<?php echo $inf->getPaymentId(); ?>" <?php if( $inf->getPaymentId() == $this->getProfile()->getInfoValue('additional_info', 'payment_id') ): ?>selected="selected"<?php endif; ?>>Credit Card: <?php echo substr_replace( $inf->getCardNumber(), '-', 4, 0 ); ?></option>
+						<?php endforeach; ?>
+					<?php endif; ?>
+				</select>
+			</div>
+			<p class="note"><a href="<?php echo $this->getUrl( 'authnetcim/manage', array('_secure' => true) ) ?>" target="_blank"><?php echo $this->__('Manage My Credit Cards') ?></a></p>
+		</li>
+		<?php echo $this->getChildHtml('authnetcim_profile_edit_below'); ?>
+		<li>
+			<p class="note"><strong>Note:</strong> Any changes will take effect with your next scheduled payment.</p>
+		</li>
+	</ul>
+</fieldset>
+<div class="buttons-set form-buttons" id="shipping-buttons-container">
+	<p class="back-link"><a href="<?php echo $this->getUrl('sales/recurring_profile/view', array('profile' => $this->getProfile()->getId())); ?>"><small>&laquo; </small><?php echo $this->__('Back') ?></a></p>
+	<button type="submit" class="button"><span><span><?php echo $this->__('Continue') ?></span></span></button>
+</div>
+<p class="required"><?php echo $this->__('* Required Fields') ?></p>
+</form>
+<?php if( $this->getProfile()->getShippingAddressInfo() != array() ): ?>
+<script type="text/javascript">
+//<![CDATA[
+	$('shipping-address-select').observe( 'change', function(e) {
+		if( $(this).value == '' ) {
+			$('shipping-new-address-form').show();
+		}
+		else {
+			$('shipping-new-address-form').hide();
+		}
+	});
+
+	var shippingRegionUpdater = new RegionUpdater('shipping:country_id', 'shipping:region', 'shipping:region_id', <?php echo $this->helper('directory')->getRegionJson() ?>, undefined, 'shipping:postcode');
+//]]>
+</script>
+<?php endif; ?>

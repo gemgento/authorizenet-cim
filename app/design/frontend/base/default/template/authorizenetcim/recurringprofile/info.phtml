@@ -1,0 +1,39 @@
+<?php 
+if( $this->isAuthnetcim() ):
+	$_card	= $this->getPaymentInfo();
+?>
+<table class="form-list">
+	<tr>
+		<td style="width:200px"><?php echo $this->__('Last Billed:'); ?></td>
+		<td><strong><?php echo $this->getLastBilled(); ?></strong></td>
+	</tr>
+	<tr>
+		<td><?php echo $this->__('Next Cycle:'); ?></td>
+		<td><strong><?php echo $this->getNextBilled(); ?></strong></td>
+	</tr>
+	<tr>
+		<td><?php echo $this->__('Payments&nbsp;Made:'); ?></td>
+		<td><strong><?php echo $this->getProfile()->getAdditionalInfo('billed_count'); ?></strong></td>
+	</tr>
+	<?php if( $this->getProfile()->getAdditionalInfo('failure_count') > 0 ): ?>
+		<tr>
+			<td><?php echo $this->__('Payments&nbsp;Failed:'); ?></td>
+			<td><strong><?php echo $this->getProfile()->getAdditionalInfo('failure_count'); ?></strong></td>
+		</tr>
+		<tr>
+			<td><?php echo $this->__('Outstanding:'); ?></td>
+			<td><strong>$<?php echo round( $this->getProfile()->getAdditionalInfo('outstanding'), 2 ); ?></strong></td>
+		</tr>
+	<?php endif; ?>
+	<tr>
+		<td><?php echo $this->__('Credit Card:') ?></td>
+		<td>
+			<?php if( $_card ): ?>
+				<strong><?php echo substr_replace($_card->getCardNumber(), '-', 4, 0) ?></strong><br />
+			<?php else: ?>
+				<?php echo $this->__('None'); ?><br />
+			<?php endif; ?>
+		</td>
+	</tr>
+</table>
+<?php endif; ?>

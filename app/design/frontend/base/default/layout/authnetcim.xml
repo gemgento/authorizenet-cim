@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<layout version="1.0.0">
+	<customer_account>
+		<reference name="customer_account_navigation">
+			<block type="authnetcim/profilelink" name="authnetcim_profilelink">
+				<action method="addProfileLink"></action>
+			</block>
+		</reference>
+	</customer_account>
+	
+	<sales_recurring_profile_view>
+		<reference name="sales.recurring.profile.view">
+			<action method="setTemplate"><template>authorizenetcim/recurringprofile/view.phtml</template></action>
+		</reference>
+		<reference name="billing_info">
+			<block type="authnetcim/recurringprofile_info" name="authnetcim_profile" template="authorizenetcim/recurringprofile/info.phtml" />
+		</reference>
+	</sales_recurring_profile_view>
+	
+	<authnetcim_manage_index>
+		<label>Customer My Account Card Manager</label>
+		<update handle="customer_account"/>
+		<reference name="content">
+			<block type="authnetcim/manage" name="authnetcim_manage" template="authorizenetcim/manage.phtml" />
+			<block type="customer/account_dashboard" name="customer.account.link.back" template="customer/account/link/back.phtml"/>
+		</reference>
+	</authnetcim_manage_index>
+	
+	<authnetcim_profile_edit>
+		<update handle="customer_account"/>
+		
+		<reference name="content">
+			<block type="authnetcim/recurringprofile_edit" name="authnetcim_profile_settings" as="authnetcim_profile_settings" template="authorizenetcim/recurringprofile/edit.phtml">
+				<block type="core/text_list" name="authnetcim_profile_edit_above" as="authnetcim_profile_edit_above" />
+				<block type="core/text_list" name="authnetcim_profile_edit_below" as="authnetcim_profile_edit_below" />
+			</block>
+		</reference>
+	</authnetcim_profile_edit>
+</layout>
