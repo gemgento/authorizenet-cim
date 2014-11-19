@@ -1,0 +1,5 @@
+<?php
+
+class ParadoxLabs_AuthorizeNetCim_Model_Payment_Api_V2 extends ParadoxLabs_AuthorizeNetCim_Model_Payment_Api {
+
+}

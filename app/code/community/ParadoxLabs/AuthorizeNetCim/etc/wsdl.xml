@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns:typens="urn:Magento" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns="http://schemas.xmlsoap.org/wsdl/" name="Magento" targetNamespace="urn:Magento">
+    <types>
+        <schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="urn:Magento">
+            <import namespace="http://schemas.xmlsoap.org/soap/encoding/" schemaLocation="http://schemas.xmlsoap.org/soap/encoding/"/>
+            <complexType name="authnetCimPaymentProfileArray">
+                <complexContent>
+                    <restriction base="soapenc:Array">
+                        <attribute ref="soapenc:arrayType" wsdl:arrayType="typens:authnetCimPaymentProfile[]"/>
+                    </restriction>
+                </complexContent>
+            </complexType>
+            <complexType name="authnetCimPaymentProfile">
+                <all>
+                    <element name="billTo" type="typens:authnetCimCardBillTo" />
+                    <element name="customerPaymentProfileId" type="xsd:int"/>
+                    <element name="payment" type="typens:authnetCimCardPayment" />
+                </all>
+            </complexType>
+            <complexType name="authnetCimCardBillTo">
+                <all>
+                    <element name="firstName" type="xsd:string" />
+                    <element name="lastName" type="xsd:string" />
+                    <element name="address" type="xsd:string" />
+                    <element name="city" type="xsd:string" />
+                    <element name="state" type="xsd:string" />
+                    <element name="zip" type="xsd:string" />
+                    <element name="country" type="xsd:string" />
+                </all>
+            </complexType>
+            <complexType name="authnetCimCardPayment">
+                <all>
+                    <element name="creditCard" type="typens:authnetCimCArdPaymentCreditCard" />
+                </all>
+            </complexType>
+            <complexType name="authnetCimCArdPaymentCreditCard">
+                <all>
+                    <element name="cardNumber" type="xsd:string" />
+                    <element name="expirationDate" type="xsd:string" />
+                </all>
+            </complexType>
+        </schema>
+    </types>
+
+    <message name="authnetcimPaymentListRequest">
+        <part name="sessionId" type="xsd:string"/>
+        <part name="customerId" type="xsd:int" />
+    </message>
+    <message name="authnetcimPaymentListResponse">
+        <part name="response" type="typens:authnetCimPaymentProfileArray" />
+    </message>
+
+    <portType name="{{var wsdl.handler}}PortType">
+        <operation name="authnetcimPaymentList">
+            <documentation>Get a list of customer payment profiles.</documentation>
+            <input message="typens:authnetcimPaymentListRequest" />
+            <output message="typens:authnetcimPaymentListResponse" />
+        </operation>
+    </portType>
+
+    <binding name="{{var wsdl.handler}}Binding" type="typens:{{var wsdl.handler}}PortType">
+        <soap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http" />
+        <operation name="authnetcimPaymentList">
+            <soap:operation soapAction="urn:{{var wsdl.handler}}Action" />
+            <input>
+                <soap:body namespace="urn:{{var wsdl.name}}" use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+            </input>
+            <output>
+                <soap:body namespace="urn:{{var wsdl.name}}" use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+            </output>
+        </operation>
+    </binding>
+</definitions> 

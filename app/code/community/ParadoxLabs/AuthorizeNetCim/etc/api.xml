@@ -1,0 +1,51 @@
+<config>
+    <api>
+        <resources>
+            <authnetcim_payment translate="title" module="paradoxlabs_authnetcim">
+                <model>authnetcim/payment_api</model>
+                <title>Authorize.net CIM Payment API</title>
+                <acl>authnetcim/payment</acl>
+                <methods>
+                    <list translate="title" module="paradoxlabs_authnetcim">
+                        <title>List of customer saved payment methods.</title>
+                        <acl>payment/list</acl>
+                        <method>items</method>
+                    </list>
+                    <create translate="title" module="paradoxlabs_authnetcim">
+                        <title>Create a customer saved payment method.</title>
+                        <acl>payment/create</acl>
+                    </create>
+                    <destroy translate="title" module="paradoxlabs_authnetcim">
+                        <title>Destroy a customer saved payment method.</title>
+                        <acl>payment/destroy</acl>
+                    </destroy>
+                </methods>
+            </authnetcim_payment>
+        </resources>
+        <v2>
+            <resources_function_prefix>
+                <authnetcim_payment>authnetcimPayment</authnetcim_payment>
+            </resources_function_prefix>
+        </v2>
+        <acl> Access Control Results  to our resources, this tree structure is displayed in "Resource Roles" panel when you open role to edit 
+            <resources>
+                <authnetcim translate="title" module="paradoxlabs_authnetcim">
+                    <title>Authorize.net CIM</title>
+                    <payment translate="title" module="paradoxlabs_authnetcim">
+                        <list translate="title" module="paradoxlabs_authnetcim">
+                            <title>Retrieve saved cards.</title>
+                        </list>
+                        <create translate="title" module="paradoxlabs_authnetcim">
+                            <title>Create saved card</title>
+                        </create>
+                        <destroy translate="title" module="paradoxlabs_authnetcim">
+                            <title>Destroy saved card</title>
+                        </destroy>
+                    </payment>
+                </authnetcim>
+                <all>
+                </all>
+            </resources>
+        </acl>
+    </api>
+</config>

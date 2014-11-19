@@ -3,6 +3,9 @@
         <ParadoxLabs_AuthorizeNetCim>
             <active>true</active>
             <codePool>community</codePool>
+            <depends>
+                <Mage_Api />
+            </depends>
         </ParadoxLabs_AuthorizeNetCim>
     </modules>
 </config>
