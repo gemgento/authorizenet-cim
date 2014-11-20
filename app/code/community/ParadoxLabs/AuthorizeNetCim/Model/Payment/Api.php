@@ -11,15 +11,51 @@ class ParadoxLabs_AuthorizeNetCim_Model_Payment_Api extends Mage_Catalog_Model_A
     public function items($customerId)
     {
         $customer = Mage::getModel('customer/customer')->load($customerId);
-        $paymentProfiles = Mage::getModel('authnetcim/payment')->setCustomer( $customer )->getPaymentProfiles();
+        $cards = Mage::getModel('authnetcim/payment')->setCustomer( $customer )->getPaymentProfiles();
+        $paymentProfiles = array();
 
-        if (empty($paymentProfiles)){
-            return array();
-        } else if (!is_array($paymentProfiles)) {
-            $paymentProfiles = array($paymentProfiles);
+        /**
+         * Get customer's active orders and check for card conflicts.
+         */
+        $orders	= Mage::getModel('sales/order')->getCollection()
+            ->addAttributeToSelect( '*' )
+            ->addAttributeToFilter( 'customer_id', $customerId )
+            ->addAttributeToFilter( 'status', array( 'like' => 'pending%' ) );
+
+        if( $cards !== false && count($cards) > 0 ) {
+            foreach( $cards as $card ) {
+                $card->inUse = 0;
+
+                if( count($orders) > 0 ) {
+                    foreach( $orders as $order ) {
+                        if( $order->getExtCustomerId() == $card->customerPaymentProfileId && $order->getPayment()->getMethod() == 'authnetcim' ) {
+                            // If we found an order with this card that is not complete, closed, or canceled,
+                            // it is still active and the payment ID is important. No editey.
+                            $card->inUse = 1;
+                            break;
+                        }
+                    }
+                }
+
+                $paymentProfiles[] = $card;
+            }
         }
 
         return $paymentProfiles;
+    }
+
+    /**
+     * Destroy a saved credit card.
+     *
+     * @param int $paymentProfileId
+     * @return bool
+     */
+    public function destroy($paymentProfileId){
+        if (Mage::getModel('authnetcim/payment')->deletePaymentProfile( $paymentProfileId, 0, false )) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
 }

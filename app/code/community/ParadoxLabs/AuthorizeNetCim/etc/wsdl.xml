@@ -15,6 +15,7 @@
                     <element name="billTo" type="typens:authnetCimCardBillTo" />
                     <element name="customerPaymentProfileId" type="xsd:int"/>
                     <element name="payment" type="typens:authnetCimCardPayment" />
+                    <element name="inUse" type="xsd:integer" />
                 </all>
             </complexType>
             <complexType name="authnetCimCardBillTo">
@@ -49,6 +50,20 @@
     <message name="authnetcimPaymentListResponse">
         <part name="response" type="typens:authnetCimPaymentProfileArray" />
     </message>
+    <message name="authnetcimPaymentCreateRequest">
+        <part name="sessionId" type="xsd:string"/>
+        <part name="customerId" type="xsd:int" />
+    </message>
+    <message name="authnetcimPaymentCreateResponse">
+        <part name="response" type="xsd:boolean" />
+    </message>
+    <message name="authnetcimPaymentDestroyRequest">
+        <part name="sessionId" type="xsd:string"/>
+        <part name="paymentProfileId" type="xsd:int" />
+    </message>
+    <message name="authnetcimPaymentDestroyResponse">
+        <part name="response" type="xsd:boolean" />
+    </message>
 
     <portType name="{{var wsdl.handler}}PortType">
         <operation name="authnetcimPaymentList">
@@ -56,11 +71,30 @@
             <input message="typens:authnetcimPaymentListRequest" />
             <output message="typens:authnetcimPaymentListResponse" />
         </operation>
+        <operation name="authnetcimPaymentCreate">
+            <documentation>Get a list of customer payment profiles.</documentation>
+            <input message="typens:authnetcimPaymentCreateRequest" />
+            <output message="typens:authnetcimPaymentCreateResponse" />
+        </operation>
+        <operation name="authnetcimPaymentDestroy">
+            <documentation>Get a list of customer payment profiles.</documentation>
+            <input message="typens:authnetcimPaymentDestroyRequest" />
+            <output message="typens:authnetcimPaymentDestroyResponse" />
+        </operation>
     </portType>
 
     <binding name="{{var wsdl.handler}}Binding" type="typens:{{var wsdl.handler}}PortType">
         <soap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http" />
         <operation name="authnetcimPaymentList">
+            <soap:operation soapAction="urn:{{var wsdl.handler}}Action" />
+            <input>
+                <soap:body namespace="urn:{{var wsdl.name}}" use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+            </input>
+            <output>
+                <soap:body namespace="urn:{{var wsdl.name}}" use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+            </output>
+        </operation>
+        <operation name="authnetcimPaymentDestroy">
             <soap:operation soapAction="urn:{{var wsdl.handler}}Action" />
             <input>
                 <soap:body namespace="urn:{{var wsdl.name}}" use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
