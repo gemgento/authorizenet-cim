@@ -40,6 +40,22 @@
                     <element name="expirationDate" type="xsd:string" />
                 </all>
             </complexType>
+            <complexType name="authnetCimPaymentFormDetails">
+                <all>
+                    <element name="firstname" type="xsd:string" />
+                    <element name="lastname" type="xsd:string" />
+                    <element name="address1" type="xsd:string" />
+                    <element name="city" type="xsd:string" />
+                    <element name="state" type="xsd:string" />
+                    <element name="zip" type="xsd:string" />
+                    <element name="country" type="xsd:string" />
+                    <element name="cc_type" type="xsd:string" />
+                    <element name="cc_type" type="xsd:string" />
+                    <element name="cc_number" type="xsd:string" />
+                    <element name="cc_exp_month" type="xsd:string" />
+                    <element name="cc_exp_year" type="xsd:string" />
+                </all>
+            </complexType>
         </schema>
     </types>
 
@@ -53,6 +69,7 @@
     <message name="authnetcimPaymentCreateRequest">
         <part name="sessionId" type="xsd:string"/>
         <part name="customerId" type="xsd:int" />
+        <part name="payment" type="typens:authnetCimPaymentFormDetails" />
     </message>
     <message name="authnetcimPaymentCreateResponse">
         <part name="response" type="xsd:boolean" />
@@ -87,6 +104,15 @@
     <binding name="{{var wsdl.handler}}Binding" type="typens:{{var wsdl.handler}}PortType">
         <soap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http" />
         <operation name="authnetcimPaymentList">
+            <soap:operation soapAction="urn:{{var wsdl.handler}}Action" />
+            <input>
+                <soap:body namespace="urn:{{var wsdl.name}}" use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+            </input>
+            <output>
+                <soap:body namespace="urn:{{var wsdl.name}}" use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+            </output>
+        </operation>
+        <operation name="authnetcimPaymentCreate">
             <soap:operation soapAction="urn:{{var wsdl.handler}}Action" />
             <input>
                 <soap:body namespace="urn:{{var wsdl.name}}" use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
