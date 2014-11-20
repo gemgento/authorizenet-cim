@@ -59,6 +59,7 @@
     </message>
     <message name="authnetcimPaymentDestroyRequest">
         <part name="sessionId" type="xsd:string"/>
+        <part name="customerId" type="xsd:int" />
         <part name="paymentProfileId" type="xsd:int" />
     </message>
     <message name="authnetcimPaymentDestroyResponse">

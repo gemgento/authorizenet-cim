@@ -47,11 +47,15 @@ class ParadoxLabs_AuthorizeNetCim_Model_Payment_Api extends Mage_Catalog_Model_A
     /**
      * Destroy a saved credit card.
      *
+     * @param int $customerId
      * @param int $paymentProfileId
      * @return bool
      */
-    public function destroy($paymentProfileId){
-        if (Mage::getModel('authnetcim/payment')->deletePaymentProfile( $paymentProfileId, 0, false )) {
+    public function destroy($customerId, $paymentProfileId){
+        $customer = Mage::getModel('customer/customer')->load($customerId);
+        $payment = Mage::getModel('authnetcim/payment')->setCustomer($customer);
+
+        if ($payment->deletePaymentProfile( $paymentProfileId, 0, false )) {
             return true;
         } else {
             return false;
