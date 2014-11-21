@@ -61,10 +61,16 @@ class ParadoxLabs_AuthorizeNetCim_Model_Payment_Api extends Mage_Catalog_Model_A
         }
 
         try {
-            return Mage::getModel('authnetcim/payment')->setCustomer( $customer )->createCustomerPaymentProfileFromForm( $payment );
+            $paymentId = Mage::getModel('authnetcim/payment')->setCustomer( $customer )->createCustomerPaymentProfileFromForm( $payment );
+
+            if ($paymentId === FALSE || $paymentId == 0) {
+                $this->_fault('invalid_card_data');
+            } else {
+                return $paymentId;
+            }
         }
         catch( Mage_Core_Exception $e ) {
-            Mage::getSingleton('core/session')->addError( $e->getMessage() );
+            $this->_fault('invalid_card_data');
         }
     }
 

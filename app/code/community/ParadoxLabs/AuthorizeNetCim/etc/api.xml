@@ -27,7 +27,7 @@
                 <authnetcim_payment>authnetcimPayment</authnetcim_payment>
             </resources_function_prefix>
         </v2>
-        <acl> Access Control Results  to our resources, this tree structure is displayed in "Resource Roles" panel when you open role to edit 
+        <acl> Access Control Results  to our resources, this tree structure is displayed in "Resource Roles" panel when you open role to edit
             <resources>
                 <authnetcim translate="title" module="paradoxlabs_authnetcim">
                     <title>Authorize.net CIM</title>
@@ -47,5 +47,11 @@
                 </all>
             </resources>
         </acl>
+        <faults module="paradoxlabs_authnetcim">
+            <invalid_card_data>
+                <code>420</code>
+                <message>Credit card data is invalid.</message>
+            </invalid_card_data>
+        </faults>
     </api>
 </config>
