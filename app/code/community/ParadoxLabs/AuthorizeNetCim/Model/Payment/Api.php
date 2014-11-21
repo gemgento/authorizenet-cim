@@ -61,8 +61,7 @@ class ParadoxLabs_AuthorizeNetCim_Model_Payment_Api extends Mage_Catalog_Model_A
         }
 
         try {
-            Mage::getModel('authnetcim/payment')->setCustomer( $customer )->createCustomerPaymentProfileFromForm( $payment );
-            return true;
+            return Mage::getModel('authnetcim/payment')->setCustomer( $customer )->createCustomerPaymentProfileFromForm( $payment );
         }
         catch( Mage_Core_Exception $e ) {
             Mage::getSingleton('core/session')->addError( $e->getMessage() );

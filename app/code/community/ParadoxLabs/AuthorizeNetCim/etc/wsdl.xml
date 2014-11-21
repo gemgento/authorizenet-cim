@@ -72,7 +72,7 @@
         <part name="payment" type="typens:authnetCimPaymentFormDetails" />
     </message>
     <message name="authnetcimPaymentCreateResponse">
-        <part name="response" type="xsd:boolean" />
+        <part name="result" type="xsd:int" />
     </message>
     <message name="authnetcimPaymentDestroyRequest">
         <part name="sessionId" type="xsd:string"/>
@@ -80,7 +80,7 @@
         <part name="paymentProfileId" type="xsd:int" />
     </message>
     <message name="authnetcimPaymentDestroyResponse">
-        <part name="response" type="xsd:boolean" />
+        <part name="result" type="xsd:boolean" />
     </message>
 
     <portType name="{{var wsdl.handler}}PortType">
